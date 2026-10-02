@@ -20,9 +20,9 @@ function escapeHtml(str) {
 
 // ---------- CONFIG (EDIT THESE) ----------
 const CONFIG = {
-  EVENT_DATE: "2026-09-26T09:00:00",
-  SEATS_TOTAL: 100,
-  SEATS_REGISTERED: 41,
+  EVENT_DATE: "2026-10-28T09:00:00",
+  SEATS_TOTAL: 250,
+  SEATS_REGISTERED: #,
   REGISTER_LINK: "#",
   BROCHURE_LINK: "#",
 };
