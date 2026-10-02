@@ -20,11 +20,11 @@ function escapeHtml(str) {
 
 // ---------- CONFIG (EDIT THESE) ----------
 const CONFIG = {
-  EVENT_DATE: "2026-09-26T09:00:00", // EDIT: placeholder date — update once officially announced
+  EVENT_DATE: "2026-09-26T09:00:00",
   SEATS_TOTAL: 100,
-  SEATS_REGISTERED: 41, // EDIT: update manually or wire to real data later
-  REGISTER_LINK: "#", // EDIT: paste external Google Form link here
-  BROCHURE_LINK: "#", // EDIT: paste brochure PDF link here
+  SEATS_REGISTERED: 41,
+  REGISTER_LINK: "#",
+  BROCHURE_LINK: "#",
 };
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -37,6 +37,7 @@ document.addEventListener("DOMContentLoaded", () => {
   initGalleryFilters();
   initSeatsBar();
   initActiveNavLink();
+  initStatCounters();   // ← NEW
 });
 
 // ---------- Mobile nav ----------
@@ -48,7 +49,7 @@ function initNav() {
 
   document.querySelectorAll(".has-dropdown > a").forEach((a) => {
     a.addEventListener("click", (e) => {
-      if (window.innerWidth <= 900) {
+      if (window.innerWidth <= 980) {
         e.preventDefault();
         a.parentElement.classList.toggle("open");
       }
@@ -110,6 +111,39 @@ function initReveal() {
   items.forEach((item) => obs.observe(item));
 }
 
+// ---------- Stat count-up animation (NEW) ----------
+function initStatCounters() {
+  const nums = document.querySelectorAll("[data-count]");
+  if (!nums.length) return;
+
+  const animate = (el) => {
+    const target = Number(el.dataset.count);
+    if (Number.isNaN(target)) return;
+    const duration = 1400;
+    const start = performance.now();
+    const step = (now) => {
+      const p = Math.min(1, (now - start) / duration);
+      // ease-out cubic
+      const eased = 1 - Math.pow(1 - p, 3);
+      el.textContent = Math.round(target * eased);
+      if (p < 1) requestAnimationFrame(step);
+      else el.textContent = target;
+    };
+    requestAnimationFrame(step);
+  };
+
+  const obs = new IntersectionObserver((entries) => {
+    entries.forEach((entry) => {
+      if (entry.isIntersecting) {
+        animate(entry.target);
+        obs.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.4 });
+
+  nums.forEach((el) => obs.observe(el));
+}
+
 // ---------- FAQ accordion ----------
 function initAccordion() {
   document.querySelectorAll(".accordion-item").forEach((item) => {
@@ -138,7 +172,7 @@ function initAboutTabs() {
   });
 }
 
-// ---------- Gallery lightbox ----------
+// ---------- Gallery filters + lightbox ----------
 function initGalleryFilters() {
   const filterBar = document.getElementById("galleryFilters");
   if (!filterBar) return;
